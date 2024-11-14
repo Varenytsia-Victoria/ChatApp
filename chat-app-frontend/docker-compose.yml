@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  frontend:
+    build:
+      context: ./client
+    ports:
+      - "3000:80"  
+    networks:
+      - chat-app-network
+
+  backend:
+    build:
+      context: ./server
+    ports:
+      - "5000:5000" 
+    networks:
+      - chat-app-network
+    environment:
+      - NODE_ENV=production
+
+
+networks:
+  chat-app-network:
+    driver: bridge
