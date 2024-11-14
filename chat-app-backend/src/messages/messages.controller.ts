@@ -1,4 +1,3 @@
-// src/messages/messages.controller.ts
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 

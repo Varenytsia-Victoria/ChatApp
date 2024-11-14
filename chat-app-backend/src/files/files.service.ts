@@ -1,4 +1,3 @@
-// src/files/files.service.ts
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 

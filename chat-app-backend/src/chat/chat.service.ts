@@ -1,4 +1,3 @@
-// src/chat/chat.service.ts
 import { Injectable, Inject } from '@nestjs/common';
 import { Pool } from 'pg';
 

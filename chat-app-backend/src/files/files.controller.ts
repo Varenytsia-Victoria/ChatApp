@@ -1,4 +1,3 @@
-// src/files/files.controller.ts
 import { Controller, Post, Body } from '@nestjs/common';
 import { FilesService } from './files.service';
 
