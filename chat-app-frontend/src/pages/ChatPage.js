@@ -1,21 +1,37 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { io } from 'socket.io-client'
+
+const socket = io('http://localhost:3000') 
 
 function ChatPage() {
 	const [messages, setMessages] = useState([])
 	const [newMessage, setNewMessage] = useState('')
+	const [username, setUsername] = useState('') 
 
 	useEffect(() => {
-		// Отримання повідомлень з сервера при завантаженні сторінки
 		axios.get('/api/messages').then(response => {
 			setMessages(response.data)
 		})
+
+		socket.on('newMessage', message => {
+			setMessages(prevMessages => [...prevMessages, message])
+		})
+
+		return () => {
+			socket.off('newMessage')
+		}
 	}, [])
 
 	const sendMessage = async e => {
 		e.preventDefault()
-		const response = await axios.post('/api/messages', { text: newMessage })
-		setMessages([...messages, response.data])
+
+		socket.emit('sendMessage', { text: newMessage, username })
+
+		setMessages(prevMessages => [
+			...prevMessages,
+			{ text: newMessage, username },
+		])
 		setNewMessage('')
 	}
 
@@ -24,7 +40,9 @@ function ChatPage() {
 			<h2>Chat</h2>
 			<div>
 				{messages.map((msg, index) => (
-					<p key={index}>{msg.text}</p>
+					<p key={index}>
+						<strong>{msg.username}:</strong> {msg.text}
+					</p>
 				))}
 			</div>
 			<form onSubmit={sendMessage}>
