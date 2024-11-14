@@ -2,17 +2,25 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { io } from 'socket.io-client'
 
-const socket = io('http://localhost:3000') 
+const socket = io('http://localhost:3000')
 
 function ChatPage() {
 	const [messages, setMessages] = useState([])
 	const [newMessage, setNewMessage] = useState('')
-	const [username, setUsername] = useState('') 
+	const [username, setUsername] = useState('')
 
 	useEffect(() => {
 		axios.get('/api/messages').then(response => {
 			setMessages(response.data)
 		})
+
+		if (Notification.permission === 'granted') {
+			const notifyNewMessage = () => {
+				new Notification('New Message', { body: 'You have a new message' })
+			}
+			socket.on('newMessage', notifyNewMessage)
+			return () => socket.off('newMessage', notifyNewMessage)
+		}
 
 		socket.on('newMessage', message => {
 			setMessages(prevMessages => [...prevMessages, message])
@@ -36,25 +44,11 @@ function ChatPage() {
 	}
 
 	return (
-		<div>
+		<div className='chat-container'>
+			<Navbar />
 			<h2>Chat</h2>
-			<div>
-				{messages.map((msg, index) => (
-					<p key={index}>
-						<strong>{msg.username}:</strong> {msg.text}
-					</p>
-				))}
-			</div>
-			<form onSubmit={sendMessage}>
-				<input
-					type='text'
-					value={newMessage}
-					onChange={e => setNewMessage(e.target.value)}
-					placeholder='Type a message'
-					required
-				/>
-				<button type='submit'>Send</button>
-			</form>
+			<MessageList messages={messages} />
+			<ChatInput onSendMessage={sendMessage} />
 		</div>
 	)
 }

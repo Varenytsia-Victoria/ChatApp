@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-function ChatInput({ onSendMessage }) {
+function ChatInput({ onSendMessage, isSending }) {
 	const [newMessage, setNewMessage] = useState('')
 
 	const handleSubmit = e => {
@@ -19,8 +19,11 @@ function ChatInput({ onSendMessage }) {
 				onChange={e => setNewMessage(e.target.value)}
 				placeholder='Type a message'
 				required
+				disabled={isSending} // Disable input when sending message
 			/>
-			<button type='submit'>Send</button>
+			<button type='submit' disabled={isSending}>
+				{isSending ? 'Sending...' : 'Send'}
+			</button>
 		</form>
 	)
 }

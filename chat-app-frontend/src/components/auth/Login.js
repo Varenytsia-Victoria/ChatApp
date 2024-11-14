@@ -1,22 +1,29 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import './auth.css'
 
-function RegisterPage() {
+function Login() {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
+	const [error, setError] = useState('')
+	const navigate = useNavigate()
 
 	const handleSubmit = async e => {
 		e.preventDefault()
 		try {
-			await axios.post('/api/register', { username, password })
+			const response = await axios.post('/api/login', { username, password })
+			localStorage.setItem('token', response.data.token) 
+			navigate('/chat') 
 		} catch (error) {
-			console.error('Error registering user', error)
+			setError('Invalid credentials')
 		}
 	}
 
 	return (
-		<div className='register-page'>
-			<h1>Register</h1>
+		<div className='login-page'>
+			<h1>Login</h1>
+			{error && <p className='error'>{error}</p>}
 			<form onSubmit={handleSubmit}>
 				<input
 					type='text'
@@ -32,10 +39,10 @@ function RegisterPage() {
 					onChange={e => setPassword(e.target.value)}
 					required
 				/>
-				<button type='submit'>Register</button>
+				<button type='submit'>Login</button>
 			</form>
 		</div>
 	)
 }
 
-export default RegisterPage
+export default Login
